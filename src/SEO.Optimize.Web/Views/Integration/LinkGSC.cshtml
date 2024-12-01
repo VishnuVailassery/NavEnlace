@@ -1,0 +1,73 @@
+﻿@model string
+@{
+    ViewData["Title"] = "Connect Your Google Search Console";
+    if (Model != "Init")
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="add-site-container">
+    <h2 class="text-center">Let's connect your Google Search Console</h2>
+
+    <div class="connection-step-indicator">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+    </div>
+
+    <div class="account-buttons">
+        <button onclick="window.location.href='@Url.Action("Authorize", "GSC")'" class="btn-connect">Connect Google Search Console</button>
+    </div>
+</div>
+
+<!-- CSS Styling -->
+<style>
+    .add-site-container {
+        background-color: #F5F7FA;
+        padding: 40px;
+        text-align: center;
+        border-radius: 8px;
+    }
+    .text-center {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .connection-step-indicator {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-bottom: 30px;
+    }
+    .connection-step-indicator span {
+        background-color: #C4C4C4;
+        color: #FFFFFF;
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 50%;
+    }
+    .account-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+    .btn-connect {
+        background-color: #2C3E50;
+        color: #FFFFFF;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    .btn-connect:hover {
+        background-color: #34495E;
+    }
+    .or-text {
+        font-size: 1.2rem;
+        color: #333;
+        padding: 0 10px;
+    }
+</style>

@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/SEO.Optimize.Web
+/src/SEO.Optimize.Core/bin/Debug/net8.0
+/src/SEO.Optimize.Core/obj
+/src/SEO.Optimize.Postgres/bin/Debug/net8.0
+/src/SEO.Optimize.Web/bin/Debug/net8.0
+/src/SEO.Optimize.Web/obj
+*.json
+*.user
+/src/SEO.Optimize.Jobs/bin/Debug/net8.0
+/src/SEO.Optimize.Jobs/obj
+/src/SEO.Optimize.Postgres/obj

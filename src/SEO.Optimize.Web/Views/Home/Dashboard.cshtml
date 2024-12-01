@@ -1,0 +1,67 @@
+﻿@using SEO.Optimize.Core.Models.ProjectInfo
+@model IEnumerable<DashboardTileData>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        @foreach (var project in Model)
+        {
+            <a href="/SiteManagement/ListPages?siteId=@project.SiteInfo.SiteId" class="col-md-12 mb-4" style="text-decoration: none;">
+                <div class="card shadow-sm p-3">
+                    <div class="row align-items-center">
+                        <!-- Project Thumbnail and Name -->
+                        <div class="col-md-2 d-flex align-items-center project-info">
+                            <img src="https://via.placeholder.com/50" alt="Project Thumbnail">
+                            <div>
+                                <h5 class="mb-0">@project.SiteInfo.SiteName</h5>
+                                <small class="text-muted">@project.SiteInfo.SiteUrl</small>
+                            </div>
+                        </div>
+
+                        <!-- Crawled Stats -->
+                        <div class="col-md-2 text-center stat-section">
+                            <h6>Crawled</h6>
+                            <p class="mb-0 text-danger">@project.SiteInfo.TotalPages <small class="text-success">+10</small></p>
+                            <small>Links found: 200 <span class="text-danger">-5</span></small>
+                        </div>
+
+                        <!-- Pages -->
+                        <div class="col-md-2 text-center stat-section">
+                            <h6>Pages</h6>
+                            <p class="mb-0">@project.SiteInfo.TotalPages</p>
+                        </div>
+
+                        <!-- Internal Link Count -->
+                        <div class="col-md-2 text-center stat-section">
+                            <h6>Internal Links</h6>
+                            <p class="mb-0">@project.SiteInfo.TotalInternalLinks <span class="text-success">+46</span></p>
+                        </div>
+
+                        <!-- Total Opportunities -->
+                        <div class="col-md-2 text-center stat-section">
+                            <h6>Opportunities</h6>
+                            <p class="mb-0">@project.SiteInfo.TotalOpportunities <span class="text-success">+576</span></p>
+                        </div>
+
+                        <!-- Additional Stats -->
+                        <div class="col-md-2 text-center stat-section">
+                            <h6>Organic Traffic</h6>
+                            <p class="mb-0">4.8K <span class="text-success">+332</span></p>
+                            <small>Organic Keywords: 10.7K <span class="text-success">+760</span></small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+</div>
+
+
+<!-- Add Button -->
+<a href="~/SiteManagement/AddSite" class="btn btn-primary add-button">+ Add</a>
+
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>

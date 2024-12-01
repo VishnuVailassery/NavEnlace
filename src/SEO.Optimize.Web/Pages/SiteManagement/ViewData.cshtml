@@ -1,0 +1,129 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using SEO.Optimize.Web.Pages.SiteManagement
+@model ViewDataModel
+@{
+    ViewData["Title"] = "Highlight External Page";
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Loading Banner -->
+<div id="loading-banner" style="background: #f0f0f0; padding: 10px; text-align: center; border-bottom: 1px solid #ccc;">
+    Loading the page, please wait...
+</div>
+
+<div id="content-container" style="border: 1px solid #ccc; padding: 10px; min-height: 500px;">
+    <!-- Content will be loaded dynamically here -->
+</div>
+
+<!-- Popup for Apply Button -->
+<div id="popup" style="display: none; position: absolute; background: white; border: 1px solid #ccc; padding: 10px; z-index: 1000;">
+    <form method="post" id="popup-form">
+        <input type="hidden" id="popup-key-input" name="Key" />
+        <input type="hidden" id="popup-value-input" name="Value" />
+        <p id="popup-value"></p>
+        <button type="submit" asp-page-handler="Apply">Apply</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const dictionary = {
+            "magnam": "value1",
+            "voluptatem": "value2",
+            "sapiente": "value3"
+        };
+
+        const container = document.getElementById('content-container');
+        const loadingBanner = document.getElementById('loading-banner');
+        const popup = document.getElementById('popup');
+        const popupKeyInput = document.getElementById('popup-key-input');
+        const popupValueInput = document.getElementById('popup-value-input');
+        const popupValue = document.getElementById('popup-value');
+        let isMouseOverPopup = false;
+
+        // Load external page content into the div
+        fetch('/api/external-content') // Replace with the actual endpoint
+            .then(response => response.text())
+            .then(html => {
+                container.innerHTML = html;
+
+                // Remove the loading banner
+                loadingBanner.style.display = 'none';
+
+                // Highlight dictionary keys after content is loaded
+                for (const key in dictionary) {
+                    highlightOccurrences(container, key);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading content:', error);
+                loadingBanner.textContent = 'Error loading the page. Please try again later.';
+            });
+
+        // Highlight occurrences of a key
+        function highlightOccurrences(root, key) {
+            const regex = new RegExp(`\\b${key}\\b`, 'gi');
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                if (node.nodeValue.match(regex)) {
+                    const span = document.createElement('span');
+                    span.innerHTML = node.nodeValue.replace(regex, match => `<mark class="highlight">${match}</mark>`);
+                    node.parentNode.replaceChild(span, node);
+                }
+            }
+
+            // Add hover events to highlights
+            const highlights = root.querySelectorAll('.highlight');
+            highlights.forEach(highlight => {
+                highlight.addEventListener('mouseenter', event => showPopup(event, highlight));
+                highlight.addEventListener('mouseleave', hidePopup);
+            });
+        }
+
+        // Show popup on hover
+        function showPopup(event, highlightElement) {
+            const key = highlightElement.innerText.trim();
+            const value = dictionary[key];
+
+            if (value) {
+                popupValue.textContent = `Value: ${value}`;
+                popupKeyInput.value = key;
+                popupValueInput.value = value;
+
+                // Get the bounding rectangle of the highlighted word
+                const rect = highlightElement.getBoundingClientRect();
+
+                // Position the popup relative to the viewport
+                popup.style.left = `${rect.left + window.scrollX}px`;
+                popup.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                popup.style.display = 'block';
+            }
+        }
+
+        // Hide popup if not hovering over the popup or the key
+        function hidePopup(event) {
+            setTimeout(() => {
+                if (!isMouseOverPopup) {
+                    popup.style.display = 'none';
+                }
+            }, 100); // Add slight delay to handle mouse movement between key and popup
+        }
+
+        // Keep popup visible when hovering over it
+        popup.addEventListener('mouseenter', () => {
+            isMouseOverPopup = true;
+        });
+
+        popup.addEventListener('mouseleave', () => {
+            isMouseOverPopup = false;
+            popup.style.display = 'none'; // Hide popup when mouse leaves the popup
+        });
+    </script>
+}

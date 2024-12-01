@@ -1,0 +1,121 @@
+﻿/* General Container */
+.list-pages-container {
+    margin: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Filters Bar */
+.filters-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8fafc;
+    padding: 15px 20px;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    gap: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filters-form {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+.dropdown-filter {
+    flex: 1;
+}
+
+.styled-dropdown {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d0d7de;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #ffffff;
+    transition: border-color 0.3s;
+}
+
+    .styled-dropdown:hover {
+        border-color: #007bff;
+    }
+
+.styled-button {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+    .styled-button:hover {
+        background-color: #0056b3;
+    }
+
+/* Page Tiles */
+.pages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.page-tile {
+    background-color: #ffffff;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    position: relative;
+}
+
+    .page-tile:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+.page-header h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #2d3748;
+}
+
+.page-summary {
+    margin: 5px 0 0;
+    color: #4a5568;
+    font-size: 14px;
+}
+
+/* Page Details */
+.page-details {
+    background-color: #f1f5f9;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 10px;
+    padding: 10px 15px;
+    border-radius: 0 0 8px 8px;
+    display: none;
+}
+
+    .page-details.collapse {
+        display: block;
+    }
+
+.details-content {
+    font-size: 14px;
+    color: #4a5568;
+}
+
+.styled-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    .styled-link:hover {
+        text-decoration: underline;
+    }

@@ -1,0 +1,101 @@
+﻿/* Container and row adjustments */
+.container {
+    max-width: 1200px;
+    margin-top: 20px;
+}
+
+/* Card styling */
+.card {
+    border: none;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+/* Project info section styling */
+.project-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .project-info img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+    .project-info h5 {
+        font-weight: 600;
+        margin-bottom: 0;
+        color: #333333;
+    }
+
+    .project-info small {
+        color: #6c757d;
+    }
+
+/* Stat columns styling */
+.stat-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+    .stat-section h6 {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+
+    .stat-section p {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: #333333;
+    }
+
+    .stat-section small {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* Row gap styling */
+.row .col-md-2,
+.row .col-md-12 {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* Remove outline on focus or click */
+.card:focus, .card:focus-visible, .card:hover, .card a:hover, .card a:focus {
+    outline: none;
+    text-decoration: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stat-section {
+        padding: 10px;
+    }
+}

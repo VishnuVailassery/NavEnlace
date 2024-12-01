@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    <link rel="stylesheet" href="~/css/list-pages.css" />
+    <title>@ViewData["Title"] - ProjectInsight</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        /* Top Menu */
+        .top-menu {
+            background-color: #ffffff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .top-menu h4 {
+            font-weight: bold;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .top-menu .menu-items {
+            display: flex;
+            gap: 20px;
+        }
+
+        .menu-items a {
+            text-decoration: none;
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .menu-items a:hover, .menu-items a.active {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .top-menu .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .top-menu .user-profile img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Menu -->
+    <div class="top-menu">
+        <h4>NavEnlace</h4>
+        <div class="menu-items">
+            <a href="~/Home/Dashboard" class="active">Dashboard</a>
+            <a href="~/SiteManagement/ListPages">Pages</a>
+            <a href="~/SiteManagement/LinkDetails">Opportunities</a>
+            <a href="~/Reports">Reports</a>
+            <a href="~/Settings">Settings</a>
+        </div>
+        <div class="user-profile">
+            <input type="text" class="form-control mr-2" placeholder="Search..." />
+            <img src="https://via.placeholder.com/40" alt="User Icon">
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="container mt-5">
+        @RenderBody()
+    </div>
+
+    @RenderSection("Scripts", required: false)
+    @RenderSection("Styles", required: false)
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>

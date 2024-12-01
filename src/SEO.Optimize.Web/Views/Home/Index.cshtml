@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+    <header class="bg-dark text-white d-flex justify-content-between align-items-center py-3">
+        <h1 class="ml-3">SEOPT</h1>
+        <div class="mr-3">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="btn btn-danger" href="~/Home/Logout">Logout</a>
+            }
+            else
+            {
+                <a class="btn btn-primary" href="~/Home/Login">Sign in with Google</a>
+            }
+        </div>
+    </header>
+
+    <div class="container d-flex flex-column align-items-center justify-content-center" style="height: 80vh;">
+        <div class="text-center">
+            <h2>Welcome</h2>
+            <p>Please sign in to continue:</p>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <p>Welcome back, @User.Identity.Name!</p>
+                <p>
+                    <img src="@User.FindFirst("urn:google:picture")?.Value" alt="Profile Picture" width="100" height="100" />
+                </p>
+            }
+            <a class="btn btn-success btn-lg mt-4" href="~/Home/Dashboard">Get Started</a> <!-- Get Started button -->
+            <p class="mt-2">Click the button above to access your dashboard and start exploring our features.</p> <!-- Typical text paragraph -->
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+﻿@model ListPagesViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="list-pages-container">
+    <!-- Filters Bar with Styled Dropdowns -->
+    <div class="filters-bar">
+        <form id="filter-form" class="filters-form">
+            <div class="dropdown-filter">
+                <select id="filter-category" name="category" class="styled-dropdown">
+                    <option value="">All Categories</option>
+                    @foreach (var category in Model.Sites)
+                    {
+                        <option value="@category">@category</option>
+                    }
+                </select>
+            </div>
+
+            <div class="dropdown-filter">
+                <select id="filter-tags" name="tags" class="styled-dropdown">
+                    <option value="">All Tags</option>
+                    @foreach (var tag in Model.PageTitle)
+                    {
+                        <option value="@tag">@tag</option>
+                    }
+                </select>
+            </div>
+
+            <div class="dropdown-filter">
+                <select id="filter-date" name="date" class="styled-dropdown">
+                    <option value="">All Dates</option>
+                    <option value="Today">Today</option>
+                    <option value="Last 7 Days">Last 7 Days</option>
+                    <option value="Last 30 Days">Last 30 Days</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn styled-button">Apply Filters</button>
+        </form>
+    </div>
+
+    <!-- Page Tiles -->
+    <div class="pages-list">
+        @if (Model.Pages.Any())
+        {
+            @foreach (var pageVal in Model.Pages)
+            {
+                <div class="page-tile" onclick="toggleDetails(@pageVal.Id)">
+                    <div class="page-header">
+                        <h4>@pageVal.Title</h4>
+                        <p class="page-summary">@pageVal.Url</p>
+                    </div>
+                    <div id="details-@pageVal.Id" class="page-details">
+                        <div class="details-content">
+                            <p>Internal Links : @pageVal.Stats?.InternalLinkCount</p>
+                            <p>External Links : @pageVal.Stats?.InternalLinkCount</p>
+                            <p>Opportunities : @pageVal.Stats?.LinkOpportunityCount</p>
+                            <a href="@pageVal.Url" class="btn styled-link">View Full Page</a>
+@using SEO.Optimize.Core.Models.ProjectInfo
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No pages match the selected filters.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleDetails(pageId) {
+            const details = document.getElementById('details-' + pageId);
+            details.classList.toggle('collapse');
+        }
+    </script>
+}
+

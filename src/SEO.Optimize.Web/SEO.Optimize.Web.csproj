@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.10" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.10" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="credentials.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SEO.Optimize.Core\SEO.Optimize.Core.csproj" />
+    <ProjectReference Include="..\SEO.Optimize.Jobs\SEO.Optimize.Jobs.csproj" />
+    <ProjectReference Include="..\SEO.Optimize.Postgres\SEO.Optimize.Postgres.csproj" />
+  </ItemGroup>
+
+</Project>

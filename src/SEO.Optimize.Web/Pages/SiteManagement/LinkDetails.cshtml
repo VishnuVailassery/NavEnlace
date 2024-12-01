@@ -1,0 +1,192 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using SEO.Optimize.Web.Pages.LinkManagement
+@model LinkDetailsModel
+@{
+    ViewData["Title"] = "Opportunities";
+    Layout = "_Layout";
+}
+
+<div class="opportunities-container">
+    <div class="header">
+        <h2>Opportunities</h2>
+        <div class="filter-actions">
+            <button class="btn add-button">Add New Opportunity</button>
+        </div>
+    </div>
+
+    <!-- Column Titles -->
+    <div class="column-titles">
+        <span>Source Page</span>
+        <span>Anchor Text</span>
+        <span>Target Page</span>
+        <span>Action</span>
+    </div>
+
+    <div class="opportunity-list">
+        @foreach (var link in Model.Links)
+        {
+            <div class="opportunity-tile">
+                <div class="tile-content">
+                    <div class="tile-section">
+                        <p class="tile-data">@link.PageUrl</p>
+                    </div>
+                    <div class="tile-section">
+                        <p class="tile-data">@link.AnchorText</p>
+                        <small class="tile-subtext">@link.AnchorTextContainingText</small>
+                    </div>
+                    <div class="tile-section">
+                        <p class="tile-data">@link.TargetLinkUrl</p>
+                    </div>
+                </div>
+                <div class="tile-actions">
+                    @if (!@link.IsApplied)
+                    {
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@link.LinkId" />
+                            <button type="submit" class="btn action-btn apply-btn" asp-page-handler="Apply">Apply</button>
+                        </form>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@link.LinkId" />
+                            <button type="submit" class="btn action-btn ignore-btn" asp-page-handler="Ignore">Ignore</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .opportunities-container {
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .header h2 {
+                font-size: 24px;
+                margin: 0;
+                font-weight: bold;
+            }
+
+        .filter-actions .add-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .filter-actions .add-button:hover {
+                background-color: #0056b3;
+            }
+
+        .column-titles {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #f8f9fc;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .opportunity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .opportunity-tile {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #e6e6e6;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .tile-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .tile-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tile-data {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        .tile-subtext {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .tile-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            font-size: 14px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 15px; /* Match the rounded button style */
+            cursor: pointer;
+        }
+
+        .action-btn {
+            color: white;
+        }
+
+        .apply-btn {
+            background-color: #5a8dee; /* Matching the blue shade */
+        }
+
+            .apply-btn:hover {
+                background-color: #4679c8;
+            }
+
+        .ignore-btn {
+            background-color: #ffc107; /* Soft yellow for Ignore button */
+            color: black;
+        }
+
+            .ignore-btn:hover {
+                background-color: #e0a800;
+            }
+
+        .btn.edit-btn {
+            background-color: #6c757d; /* Soft gray for the Edit button */
+        }
+
+            .btn.edit-btn:hover {
+                background-color: #5a6268;
+            }
+    </style>
+}

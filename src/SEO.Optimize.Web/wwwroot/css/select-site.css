@@ -1,0 +1,56 @@
+﻿/* Container styling */
+.site-selection-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* Title styling */
+.title {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Site options styling */
+.site-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.site-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    /* Radio button label */
+    .site-option label {
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+/* Proceed button styling */
+.btn-proceed {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-proceed:hover {
+        background-color: #0056b3;
+    }
