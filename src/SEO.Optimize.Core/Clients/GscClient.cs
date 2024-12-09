@@ -1,7 +1,10 @@
 ﻿using Google.Apis.Auth.OAuth2.Responses;
+using Google.Apis.SearchConsole.v1;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using SEO.Optimize.Core.Configurations;
 using SEO.Optimize.Core.Interfaces;
 using SEO.Optimize.Core.Models;
 using SEO.Optimize.Core.Models.Google;
@@ -14,19 +17,21 @@ namespace SEO.Optimize.Core.Clients
 {
     public class GscClient
     {
-        
-        //private readonly string[] scopes = { SearchConsoleService.ScopeConstants.WebmastersReadonly };
-
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly HttpClient httpClient;
         private readonly IContentRepository contentRepository;
+        private readonly GSCConfigs gscConfigs;
         private string? TokenEndpoint = "https://oauth2.googleapis.com/token";
         const string BASE_GSC_URL = "https://www.googleapis.com/webmasters/v3/sites";
 
-        public GscClient(IHttpClientFactory httpClientFactory, IContentRepository contentRepository)
+        public GscClient(
+            IHttpClientFactory httpClientFactory, 
+            IContentRepository contentRepository,
+            IOptions<GSCConfigs> gscConfigs)
         {
             httpClient = httpClientFactory.CreateClient();
             this.contentRepository = contentRepository;
+            this.gscConfigs = gscConfigs.Value;
         }
 
         public async Task<SearchAnalyticsResponse> GetAllSearchAnalyticsBySite(string siteUrl, IEnumerable<TokenInfo> tokens)
@@ -85,26 +90,27 @@ namespace SEO.Optimize.Core.Clients
             var gscAccessToken = tokens.First(o => o.TokenType == "gsc_access_token");
             var gscRefreshToken = tokens.First(o => o.TokenType == "gsc_refresh_token");
 
-            if(gscAccessToken.ExpiresOn > DateTime.UtcNow)
+            if(gscAccessToken.Expiry > DateTime.UtcNow)
             {
                 return null;
             }
 
             var requestBody = new
             {
-                client_id = clientId,
-                client_secret = clientSecret,
+                client_id = gscConfigs.ClientId,
+                client_secret = gscConfigs.ClientSecret,
                 refresh_token = gscRefreshToken.Token,
                 grant_type = "refresh_token"
             };
 
             string jsonPayload = JsonConvert.SerializeObject(requestBody);
-            HttpResponseMessage response = await httpClient.PostAsync(TokenEndpoint, new StringContent(jsonPayload, Encoding.UTF8, "application/json"));
+            HttpResponseMessage response = await httpClient.PostAsync(
+                TokenEndpoint, 
+                new StringContent(jsonPayload, Encoding.UTF8, "application/json")
+            );
 
-            // Ensure the request was successful
             response.EnsureSuccessStatusCode();
 
-            // Parse and return the response
             string responseContent = await response.Content.ReadAsStringAsync();
             var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(responseContent);
 

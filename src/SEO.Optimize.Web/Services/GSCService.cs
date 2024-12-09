@@ -3,6 +3,8 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.SearchConsole.v1;
 using Google.Apis.Auth.OAuth2.Responses;
 using System.Security.Claims;
+using Microsoft.Extensions.Options;
+using SEO.Optimize.Core.Configurations;
 
 namespace SEO.Optimize.Web.Services
 {
@@ -12,12 +14,18 @@ namespace SEO.Optimize.Web.Services
         private readonly AppStateCache appStateCache;
         private readonly TokenManagementService tokenManagementService;
         private readonly JobService jobService;
+        private readonly GSCConfigs gscConfigs;
 
-        public GSCService(AppStateCache appStateCache, TokenManagementService tokenManagementService, JobService jobService)
+        public GSCService(
+            AppStateCache appStateCache, 
+            TokenManagementService tokenManagementService, 
+            JobService jobService,
+            IOptions<GSCConfigs> gscConfigs)
         {
             this.appStateCache = appStateCache;
             this.tokenManagementService = tokenManagementService;
             this.jobService = jobService;
+            this.gscConfigs = gscConfigs.Value;
         }
 
         public async Task<string> GoogleAuthorizationRequestUrl(ClaimsIdentity identity)
@@ -49,20 +57,22 @@ namespace SEO.Optimize.Web.Services
 
             var clientSecrets = new ClientSecrets
             {
-                ClientId = clientId,
-                ClientSecret = clientSecret
+                ClientId = gscConfigs.ClientId,
+                ClientSecret = gscConfigs.ClientSecret,
             };
             
-            var codeFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
-            {
-                ClientSecrets = clientSecrets,
-                Scopes = scopes
-            });
+            var codeFlow = new GoogleAuthorizationCodeFlow(
+                new GoogleAuthorizationCodeFlow.Initializer
+                {
+                    ClientSecrets = clientSecrets,
+                    Scopes = scopes
+                }
+            );
 
             var tokenResponse = await codeFlow.ExchangeCodeForTokenAsync(
                 userId: "user",
                 code: code,
-                redirectUri: redirectUri,
+                redirectUri: gscConfigs.RedirectUrls.First(),
                 CancellationToken.None
             );
 
@@ -82,8 +92,8 @@ namespace SEO.Optimize.Web.Services
         private string GoogleAuthorizationCodeRequestUrl(string state)
         {
             return $"https://accounts.google.com/o/oauth2/v2/auth?" +
-                   $"client_id={clientId}&" +
-                   $"redirect_uri={redirectUri}&" +
+                   $"client_id={gscConfigs.ClientId}&" +
+                   $"redirect_uri={gscConfigs.RedirectUrls.First()}&" +
                    $"response_type=code&" +
                    $"scope={string.Join(" ", scopes)}&" +
                    $"access_type=offline&" +

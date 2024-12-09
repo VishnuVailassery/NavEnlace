@@ -9,6 +9,6 @@ namespace SEO.Optimize.Core.Interfaces
 {
     public interface IPageCrawlModelHandler
     {
-        Task<CrawlPageOutput> CrawlContentAndFindLinks(string content, List<(string,string)> keywords);
+        Task<CrawlPageOutput> CrawlContentAndFindLinks(string fieldKey, string content, List<(string,string)> keywords);
     }
 }

@@ -140,15 +140,27 @@ namespace SEO.Optimize.Postgres.Repository
         {
             foreach (var token in tokens)
             {
-                await dbContext.Tokens.AddAsync(new Token()
+                var tokenExisting = dbContext.Tokens.FirstOrDefault(t => t.SiteId == token.SiteId && t.TokenType == token.TokenType);
+                if(tokenExisting != null)
                 {
-                    TokenValue = token.Token,
-                    TokenType = token.TokenType,
-                    TokenExpiresAt = token.Expiry,
-                    CreatedOn = DateTime.UtcNow,
-                    UpdatedOn = DateTime.UtcNow,
-                    SiteId = token.SiteId,
-                });
+                    tokenExisting.SiteId = token.SiteId;
+                    tokenExisting.TokenType = token.TokenType;
+                    tokenExisting.TokenValue = token.Token;
+                    tokenExisting.TokenExpiresAt = token.Expiry;
+                    tokenExisting.UpdatedOn = DateTime.UtcNow;
+                }
+                else
+                {
+                    await dbContext.Tokens.AddAsync(new Token()
+                    {
+                        TokenValue = token.Token,
+                        TokenType = token.TokenType,
+                        TokenExpiresAt = token.Expiry,
+                        CreatedOn = DateTime.UtcNow,
+                        UpdatedOn = DateTime.UtcNow,
+                        SiteId = token.SiteId,
+                    });
+                }
             }
 
             await dbContext.SaveChangesAsync();
@@ -170,7 +182,8 @@ namespace SEO.Optimize.Postgres.Repository
                 CreatedOn = DateTime.UtcNow,
                 UpdatedOn = DateTime.UtcNow,
                 CompletedOn = null,
-                JobProperties = string.Empty
+                JobProperties = string.Empty,
+                Status = "InQueue"
             };
 
             await dbContext.Jobs.AddAsync(job);
@@ -195,7 +208,8 @@ namespace SEO.Optimize.Postgres.Repository
                     UpdatedOn = o.UpdatedOn,
                     CompletedOn = o.CompletedOn,
                     JobProperties = o.JobProperties,
-                    Id = o.Id
+                    Id = o.Id,
+                    Status = o.Status,
                 };
             });
         }
@@ -249,8 +263,8 @@ namespace SEO.Optimize.Postgres.Repository
                     pageInfo = new PageInfo()
                     {
                         SiteId = siteId,
-                        Title = pageItem.FieldData.Name,
-                        Url = pageItem.FieldData.Slug,
+                        Title = pageItem.FieldData["name"].ToString(),
+                        Url = pageItem.FieldData["slug"].ToString(),
                         CrawlId = crawlInfo.CrawlId,
                         ExternalId = $"{pageItem.CollectionId}##{pageItem.Id}"
                     };
@@ -259,35 +273,41 @@ namespace SEO.Optimize.Postgres.Repository
                 await dbContext.PageInfos.AddAsync(pageInfo);
                 await dbContext.SaveChangesAsync();
 
-                var existingLinks = crawlOutPut.ExistingLinks.Select(o => new LinkDetail()
+                var existingLinks = new List<LinkDetail>();
+                foreach (var exLink in crawlOutPut.ExistingLinks)
                 {
-                    AnchorTextContainingText = o.Key,
-                    AnchorText = o.Key,
-                    LinkUrl = o.Value,
-                    LinkType = "INTERNAL",
-                    IsOpportunity = false,
-                    PageId = pageInfo.PageId,
-                });
-
+                    var detail = new LinkDetail()
+                    {
+                        AnchorTextContainingText = exLink.AnchorTextContainingLine,
+                        AnchorText = exLink.AnchorText,
+                        LinkUrl = exLink.TargetUrl,
+                        LinkType = "INTERNAL",
+                        IsOpportunity = false,
+                        PageId = pageInfo.PageId,
+                        NodeXPath = exLink.NodeXPath,
+                        FieldKey = exLink.FieldKey,
+                    };
+                    existingLinks.Add(detail);
+                }
+                
                 var opportunities = new List<LinkDetail>();
                 foreach (var link in crawlOutPut.LinkOpportunities)
                 {
-                    var values = link.Value.Select(o => 
+                    //var st = o.IndexOf(link.Key.Item1) >= 0 ? o.IndexOf(link.Key.Item1) : 0;
+                    //var etLength = o.IndexOf(link.Key.Item1) >= 0 ? o.IndexOf(link.Key.Item1) + link.Key.Item1.Length + 50 : o.Length;
+                    var value = new LinkDetail()
                     {
-                        //var st = o.IndexOf(link.Key.Item1) >= 0 ? o.IndexOf(link.Key.Item1) : 0;
-                        //var etLength = o.IndexOf(link.Key.Item1) >= 0 ? o.IndexOf(link.Key.Item1) + link.Key.Item1.Length + 50 : o.Length;
-                        return new LinkDetail()
-                        {
-                            AnchorTextContainingText = o,
-                            AnchorText = link.Key.Item1,
-                            LinkType = "INTERNAL",
-                            IsOpportunity = true,
-                            PageId = pageInfo.PageId,
-                            LinkUrl = link.Key.Item2 ?? string.Empty,
-                        };
-                    });
+                        AnchorTextContainingText = link.AnchorTextContainingLine,
+                        AnchorText = link.AnchorText,
+                        LinkType = "INTERNAL",
+                        IsOpportunity = true,
+                        PageId = pageInfo.PageId,
+                        LinkUrl = link.TargetUrl ?? string.Empty,
+                        NodeXPath = link.NodeXPath,
+                        FieldKey = link.FieldKey
+                    };
 
-                    opportunities.AddRange(values);
+                    opportunities.Add(value);
                 }
 
                 await dbContext.LinkDetails.AddRangeAsync(existingLinks);
@@ -306,7 +326,7 @@ namespace SEO.Optimize.Postgres.Repository
             }
         }
 
-        public async Task UpdateJobAsync(int jobId, bool isComplete = false)
+        public async Task UpdateJobAsync(int jobId, string? status = null)
         {
             var job = await dbContext.Jobs.FirstOrDefaultAsync(o => o.Id == jobId);
             if (job == null)
@@ -315,9 +335,13 @@ namespace SEO.Optimize.Postgres.Repository
             }
 
             job.UpdatedOn = DateTime.UtcNow;
-            if (isComplete)
+            if (!string.IsNullOrWhiteSpace(status))
             {
-                job.CompletedOn = DateTime.UtcNow;
+                job.Status = status;
+                if(status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                {
+                    job.CompletedOn = DateTime.UtcNow;
+                }
             }
 
             await dbContext.SaveChangesAsync();
@@ -346,7 +370,7 @@ namespace SEO.Optimize.Postgres.Repository
                 res = res.Skip(searchParams.Offset.Value * 10);
             }
 
-            var pages = await res.Take(10).Include(o => o.PageStats).ToListAsync();
+            var pages = await res.Take(100).Include(o => o.PageStats).ToListAsync();
 
             var resultPageList = pages.Select(o =>
             {
@@ -424,9 +448,29 @@ namespace SEO.Optimize.Postgres.Repository
                 PageUrl = o.PageInfo.Url,
                 AnchorTextContainingText = o.AnchorTextContainingText,
                 SiteId = o.PageInfo.SiteId,
-                ExternalPageId = o.PageInfo.ExternalId
+                ExternalPageId = o.PageInfo.ExternalId,
+                FieldKey = o.FieldKey,
+                IsOpportunity = true,
             })
             .ToListAsync();
+        }
+
+        public async Task ScheduleCrawlForPage(JobInfo jobInfo)
+        {
+            var job = new Job()
+            {
+                Name = jobInfo.Name,
+                UserId = jobInfo.UserId,
+                SiteId = jobInfo.SiteId,
+                CreatedOn = DateTime.UtcNow,
+                UpdatedOn = DateTime.UtcNow,
+                CompletedOn = null,
+                JobProperties = jobInfo.JobProperties,
+                Status = jobInfo.Status
+            };
+
+            await dbContext.Jobs.AddAsync(job);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

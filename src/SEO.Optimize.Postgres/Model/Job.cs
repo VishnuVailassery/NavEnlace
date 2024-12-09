@@ -18,6 +18,8 @@ namespace SEO.Optimize.Postgres.Model
 
         public int SiteId { get; set; }
 
+        public required string Status { get; set; }
+
         public DateTime CreatedOn {  get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedOn {  get; set; } = DateTime.UtcNow;

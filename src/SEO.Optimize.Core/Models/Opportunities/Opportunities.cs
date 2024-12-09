@@ -26,5 +26,7 @@ namespace SEO.Optimize.Core.Models.Opportunities
         public string PageUrl { get; set; }
 
         public bool IsApplied { get; set; }
+
+        public string FieldKey { get; set; }
     }
 }

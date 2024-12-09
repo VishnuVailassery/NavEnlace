@@ -7,6 +7,7 @@ using SEO.Optimize.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using SEO.Optimize.Postgres.Context;
 using SEO.Optimize.Postgres.Repository;
+using SEO.Optimize.Postgres.Repository.UnitOfWork;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using SEO.Optimize.Jobs.Workers;
@@ -14,6 +15,7 @@ using SEO.Optimize.Core.Interfaces;
 using SEO.Optimize.Core.Handlers;
 using SEO.Optimize.Jobs.Handlers;
 using SEO.Optimize.Core.Clients;
+using SEO.Optimize.Core.Configurations;
 
 namespace SEO.Optimize.Web
 {
@@ -21,10 +23,11 @@ namespace SEO.Optimize.Web
     {
         private static void Main(string[] args)
         {
-            //var configuration = new ConfigurationBuilder()
-            //.SetBasePath(Directory.GetCurrentDirectory())
-            //.AddJsonFile("appsettings.json")
-            //.Build();
+            var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddEnvironmentVariables()
+            .Build();
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpClient();
@@ -44,7 +47,14 @@ namespace SEO.Optimize.Web
             builder.Services.AddScoped<JobService>();
             builder.Services.AddScoped<IntegrationService>();
             builder.Services.AddScoped<IContentRepository,PostgresContentRepository>();
-            builder.Services.AddDbContext<DataContext>();
+            builder.Services.AddScoped<IDataUnitOfWork, PostgresUnitOfWork>();
+
+            builder.Services.AddDbContext<DataContext>(options =>
+            options.UseNpgsql(configuration.GetSection("DataStore:Postgres").GetValue<string>("ConnectionString")));
+
+            builder.Services.Configure<WebflowConfigs>(configuration.GetSection("Webflow"));
+            builder.Services.Configure<GoogleConfigs>(configuration.GetSection("Google"));
+            builder.Services.Configure<GSCConfigs>(configuration.GetSection("GoogleSearchConsole"));
 
             builder.Services.AddAuthentication(options =>
             {
@@ -52,13 +62,19 @@ namespace SEO.Optimize.Web
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie(options =>
+            .AddCookie("Cookies", options =>
             {
-                options.LoginPath = "/Home/Login"; // Redirect to this path if not authenticated
-                options.AccessDeniedPath = "/Home/AccessDenied"; // Optional: Redirect for denied access
+                options.Cookie.Name = "MyApp.Auth"; // Customize cookie name
+                options.Cookie.HttpOnly = true; // For security
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Session timeout
+                options.SlidingExpiration = true; // Extend session on activity
+                options.LoginPath = "/Home/Login"; // Redirect here if not logged in
+                options.LogoutPath = "/Home/Logout"; // Path for logout
             })
             .AddGoogle(options =>
             {
+                options.ClientId = configuration.GetSection("Google").GetValue<string>("ClientId")!;
+                options.ClientSecret = configuration.GetSection("Google").GetValue<string>("ClientSecret")!;
                 options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
                 options.SaveTokens = true;
 
@@ -67,15 +83,18 @@ namespace SEO.Optimize.Web
             })
             .AddOpenIdConnect(options =>
             {
-                options.Authority = "https://accounts.google.com"; // The URL of the OIDC provider
-                options.ResponseType = "code"; // Use "code" for authorization code flow
+                options.ClientId = configuration.GetSection("Google").GetValue<string>("ClientId");
+                options.ClientSecret = configuration.GetSection("Google").GetValue<string>("ClientSecret");
 
-                options.SaveTokens = true; // Save access and refresh tokens in the authentication cookie
+                options.Authority = "https://accounts.google.com"; 
+                options.ResponseType = "code"; 
+
+                options.SaveTokens = true; 
                 options.CallbackPath = "/signin-oidc";
 
-                options.Scope.Add("openid"); // Add the openid scope
-                options.Scope.Add("profile"); // Add the profile scope
-                options.Scope.Add("email"); // Add the email scope
+                options.Scope.Add("openid"); 
+                options.Scope.Add("profile"); 
+                options.Scope.Add("email"); 
                 options.MetadataAddress = "https://accounts.google.com/.well-known/openid-configuration";
                 options.Events = new OpenIdConnectEvents
                 {

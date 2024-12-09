@@ -23,6 +23,10 @@
 
         public string AnchorTextContainingText { get; set; }
 
+        public string NodeXPath { get; set; }
+
+        public string FieldKey { get; set; }
+
         [Required]
         public bool IsOpportunity { get; set; }
 

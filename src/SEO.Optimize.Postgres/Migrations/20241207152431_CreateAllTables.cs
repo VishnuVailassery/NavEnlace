@@ -21,6 +21,7 @@ namespace SEO.Optimize.Postgres.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     SiteId = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CompletedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -163,6 +164,8 @@ namespace SEO.Optimize.Postgres.Migrations
                     LinkType = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     AnchorText = table.Column<string>(type: "text", nullable: false),
                     AnchorTextContainingText = table.Column<string>(type: "text", nullable: false),
+                    NodeXPath = table.Column<string>(type: "text", nullable: false),
+                    FieldKey = table.Column<string>(type: "text", nullable: false),
                     IsOpportunity = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>

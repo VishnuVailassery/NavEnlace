@@ -7,51 +7,57 @@
 }
 
 <div class="container mt-5">
+    <h2 class="mb-4 font-weight-bold text-primary">Projects</h2>
     <div class="row">
         @foreach (var project in Model)
         {
-            <a href="/SiteManagement/ListPages?siteId=@project.SiteInfo.SiteId" class="col-md-12 mb-4" style="text-decoration: none;">
-                <div class="card shadow-sm p-3">
-                    <div class="row align-items-center">
-                        <!-- Project Thumbnail and Name -->
-                        <div class="col-md-2 d-flex align-items-center project-info">
-                            <img src="https://via.placeholder.com/50" alt="Project Thumbnail">
-                            <div>
-                                <h5 class="mb-0">@project.SiteInfo.SiteName</h5>
+            <a href="/SiteManagement/ListPages?siteId=@project.SiteInfo.SiteId" class="col-12 mb-4 tile-link">
+                <div class="card dashboard-tile p-3">
+                    <div class="d-flex align-items-center">
+                        <!-- Left: Project Image -->
+                        <div class="project-image-container">
+                            <img src="https://cdn.prod.website-files.com/671935d5b73c4687f0209281/671935d5b73c4687f020928e_placeholder%201.svg" alt="Project Thumbnail" class="project-thumbnail">
+                        </div>
+
+                        <!-- Middle: Project Info and Stats -->
+                        <div class="d-flex flex-column flex-grow-1 ml-4">
+                            <!-- Project Name and URL -->
+                            <div class="mb-3">
+                                <h5 class="project-name">@project.SiteInfo.SiteName</h5>
                                 <small class="text-muted">@project.SiteInfo.SiteUrl</small>
+                            </div>
+
+                            <!-- Stats Section -->
+                            <div class="d-flex justify-content-between stats-container">
+                                <div class="stat text-center">
+                                    <h6 class="stat-title">Crawled</h6>
+                                    <p class="stat-value">@project.SiteInfo.TotalPages</p>
+                                    <small>+10 Links Found</small>
+                                </div>
+                                <div class="stat text-center">
+                                    <h6 class="stat-title">Pages</h6>
+                                    <p class="stat-value">@project.SiteInfo.TotalPages</p>
+                                </div>
+                                <div class="stat text-center">
+                                    <h6 class="stat-title">Internal Links</h6>
+                                    <p class="stat-value">@project.SiteInfo.TotalInternalLinks</p>
+                                </div>
+                                <div class="stat text-center">
+                                    <h6 class="stat-title">Opportunities</h6>
+                                    <p class="stat-value">@project.SiteInfo.TotalOpportunities</p>
+                                </div>
+                                <div class="stat text-center">
+                                    <h6 class="stat-title">Organic Traffic</h6>
+                                    <p class="stat-value">4.8K</p>
+                                    <small>+760 Keywords</small>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Crawled Stats -->
-                        <div class="col-md-2 text-center stat-section">
-                            <h6>Crawled</h6>
-                            <p class="mb-0 text-danger">@project.SiteInfo.TotalPages <small class="text-success">+10</small></p>
-                            <small>Links found: 200 <span class="text-danger">-5</span></small>
-                        </div>
-
-                        <!-- Pages -->
-                        <div class="col-md-2 text-center stat-section">
-                            <h6>Pages</h6>
-                            <p class="mb-0">@project.SiteInfo.TotalPages</p>
-                        </div>
-
-                        <!-- Internal Link Count -->
-                        <div class="col-md-2 text-center stat-section">
-                            <h6>Internal Links</h6>
-                            <p class="mb-0">@project.SiteInfo.TotalInternalLinks <span class="text-success">+46</span></p>
-                        </div>
-
-                        <!-- Total Opportunities -->
-                        <div class="col-md-2 text-center stat-section">
-                            <h6>Opportunities</h6>
-                            <p class="mb-0">@project.SiteInfo.TotalOpportunities <span class="text-success">+576</span></p>
-                        </div>
-
-                        <!-- Additional Stats -->
-                        <div class="col-md-2 text-center stat-section">
-                            <h6>Organic Traffic</h6>
-                            <p class="mb-0">4.8K <span class="text-success">+332</span></p>
-                            <small>Organic Keywords: 10.7K <span class="text-success">+760</span></small>
+                        <!-- Right: Action Buttons -->
+                        <div class="ml-auto">
+                            <button class="btn btn-outline-primary btn-sm mr-2">Edit</button>
+                            <button class="btn btn-primary btn-sm">View</button>
                         </div>
                     </div>
                 </div>
@@ -60,8 +66,146 @@
     </div>
 </div>
 
-
-<!-- Add Button -->
-<a href="~/SiteManagement/AddSite" class="btn btn-primary add-button">+ Add</a>
+<!-- Floating Add Button -->
+<a href="~/SiteManagement/AddSite" class="btn add-button">
+    <i class="fas fa-plus"></i>
+</a>
 
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+@section Styles
+{
+    <style>
+        .text-primary {
+            color: #563d7c !important; 
+        }
+        /* General Tile Styling */
+        .tile-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dashboard-tile {
+            border: none;
+            border-radius: 12px;
+            background-color: #f9f9f9; /* Light gray for tile background */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .dashboard-tile:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            }
+
+        /* Project Image */
+        .project-image-container {
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff; /* White background for image container */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Project Info */
+        .project-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2b2b2b; /* Darker gray for titles */
+        }
+
+        .text-muted {
+            font-size: 0.9rem;
+            color: #6c757d; /* Muted gray for subtitles */
+        }
+
+        /* Stats Section */
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .stat-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #888888; /* Lighter gray for stat labels */
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333333; /* Dark gray for stat values */
+        }
+
+        .text-success {
+            color: #28a745 !important; /* Green for positive stats */
+        }
+
+        .text-danger {
+            color: #dc3545 !important; /* Red for negative stats */
+        }
+
+        /* Action Buttons */
+        button {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            border: none;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+            button.btn-outline-primary {
+                color: #563d7c;
+                background-color: #ffffff;
+                border: 1px solid #563d7c;
+            }
+
+                button.btn-outline-primary:hover {
+                    background-color: #f0f8ff; /* Light blue on hover */
+                }
+
+            button.btn-primary {
+                background-color: #563d7c;
+                color: #ffffff;
+            }
+
+                button.btn-primary:hover {
+                    background-color: #0056b3;
+                }
+
+        /* Floating Add Button */
+        .add-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #563d7c;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+            .add-button:hover {
+                background-color: #0056b3;
+                transform: scale(1.1);
+            }
+    </style>
+}

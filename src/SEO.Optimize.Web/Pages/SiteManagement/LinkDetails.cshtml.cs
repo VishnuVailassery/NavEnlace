@@ -28,12 +28,9 @@ namespace SEO.Optimize.Web.Pages.LinkManagement
         public async Task<IActionResult> OnPostApply(int id)
         {
             var links = (await siteManagementService.GetOpportunitiesByIds(new List<int>() { id })).ToList();
-            var opportunity = links.FirstOrDefault(x => x.LinkId == id);
+            var opportunity = links.Where(x => x.LinkId == id);
 
             await actionHandlerService.UpdateLinksAsync(opportunity);
-            opportunity.IsApplied = true;
-
-            TempData["Message"] = $"Link with ID {id} has been applied.";
             return RedirectToPage();
         }
 

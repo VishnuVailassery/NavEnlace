@@ -25,10 +25,9 @@ namespace SEO.Optimize.Core.Interfaces
 
 
         Task ScheduleCrawlJob(int userId, int siteId);
-
+        Task ScheduleCrawlForPage(JobInfo jobInfo);
         Task<IEnumerable<JobInfo>> GetAllCrawlJobs();
-
-        Task UpdateJobAsync(int jobId, bool isComplete = false);
+        Task UpdateJobAsync(int jobId, string? status = null);
 
 
 

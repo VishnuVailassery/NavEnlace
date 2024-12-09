@@ -80,6 +80,10 @@ namespace SEO.Optimize.Postgres.Migrations
                     b.Property<int>("SiteId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -107,6 +111,10 @@ namespace SEO.Optimize.Postgres.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("FieldKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsOpportunity")
                         .HasColumnType("boolean");
 
@@ -116,6 +124,10 @@ namespace SEO.Optimize.Postgres.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.Property<string>("LinkUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NodeXPath")
                         .IsRequired()
                         .HasColumnType("text");
 

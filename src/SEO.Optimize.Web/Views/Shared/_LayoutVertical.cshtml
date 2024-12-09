@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - NavEnlace</title>
+    <style>
+        /* Reset styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        /* Header */
+        .header {
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+            .header .header-title {
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+
+            .header .profile {
+                position: relative;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+
+                .header .profile img {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                }
+
+            .header .dropdown-menu {
+                display: none;
+                position: absolute;
+                right: 0;
+                top: 50px; /* Below the header */
+                background-color: #ffffff;
+                border: 1px solid #ddd;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                border-radius: 5px;
+                z-index: 1001;
+                width: 150px;
+            }
+
+                .header .dropdown-menu button {
+                    width: 100%;
+                    padding: 10px 15px;
+                    text-align: left;
+                    font-size: 1rem;
+                    color: #563d7c;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                }
+
+                    .header .dropdown-menu button:hover {
+                        background-color: #f3f3f3;
+                    }
+
+            .header .profile:hover .dropdown-menu {
+                display: block;
+            }
+
+        /* Side Menu */
+        .side-menu {
+            width: 250px;
+            background-color: #ffffff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            height: 100vh; /* Extend to full height */
+            position: fixed;
+            top: 60px; /* Below the header */
+            overflow-y: auto; /* Handle scrolling for long content */
+        }
+
+            .side-menu .user-info {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+                .side-menu .user-info img {
+                    border-radius: 50%;
+                    width: 60px;
+                    height: 60px;
+                    margin-bottom: 10px;
+                }
+
+                .side-menu .user-info p {
+                    margin: 0;
+                    font-size: 1rem;
+                    color: #6c757d;
+                    text-align: center;
+                }
+
+            .side-menu .menu-items a {
+                display: flex;
+                align-items: center;
+                padding: 10px 20px;
+                text-decoration: none;
+                font-size: 1rem;
+                color: #6c757d;
+                border-left: 3px solid transparent;
+            }
+
+                .side-menu .menu-items a.active {
+                    color: #563d7c;
+                    font-weight: bold;
+                    background-color: #f3f3f3;
+                    border-left: 3px solid #563d7c;
+                }
+
+                .side-menu .menu-items a:hover {
+                    background-color: #f3f3f3;
+                }
+
+        /* Content */
+        .content {
+            margin-left: 250px;
+            margin-top: 80px; /* Below the header */
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title">NavEnlace</div>
+        <div class="profile">
+            <img src="https://via.placeholder.com/40" alt="Profile Icon" />
+            <div class="dropdown-menu">
+                <button onclick="alert('Signed Out!')">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Menu -->
+    <div class="side-menu">
+        <div class="user-info">
+            <img src="https://via.placeholder.com/60" alt="User Icon">
+            <p>Sarah</p>
+            <p>sarah@corp.com</p>
+        </div>
+        <div class="menu-items">
+            <a href="~/Home/Dashboard" class="active">Dashboard</a>
+            <a href="~/SiteManagement/ListPages">Pages</a>
+            <a href="~/SiteManagement/LinkDetails">Opportunities</a>
+            <a href="~/Reports">Reports</a>
+            <a href="~/Settings">Settings</a>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    @RenderSection("Scripts", required: false)
+    @RenderSection("Styles", required: false)
+</body>
+</html>

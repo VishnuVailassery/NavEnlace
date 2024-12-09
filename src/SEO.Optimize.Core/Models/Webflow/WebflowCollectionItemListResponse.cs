@@ -23,7 +23,7 @@ namespace SEO.Optimize.Core.Models.Webflow
         public DateTime CreatedOn { get; set; }
         public bool IsArchived { get; set; }
         public bool IsDraft { get; set; }
-        public FieldData FieldData { get; set; }
+        public Dictionary<string, object> FieldData { get; set; } = new Dictionary<string, object>();
     }
 
     public class FieldData

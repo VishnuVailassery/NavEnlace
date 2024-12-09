@@ -1,4 +1,5 @@
-﻿using SEO.Optimize.Core.Clients;
+﻿using Newtonsoft.Json.Linq;
+using SEO.Optimize.Core.Clients;
 using SEO.Optimize.Core.Interfaces;
 using SEO.Optimize.Core.Models.Google;
 using SEO.Optimize.Core.Models.Jobs;
@@ -32,7 +33,7 @@ namespace SEO.Optimize.Jobs.Handlers
 
             try
             {
-                await contentRepository.UpdateJobAsync(jobInfo.Id);
+                await contentRepository.UpdateJobAsync(jobInfo.Id, "Running");
                 var tokens = await contentRepository.GetTokensBySiteId(jobInfo.SiteId);
                 var siteInfo = await contentRepository.GetSiteByIdAsync(jobInfo.SiteId);
 
@@ -42,14 +43,12 @@ namespace SEO.Optimize.Jobs.Handlers
                     var tokenList = new List<TokenInfo>();
                     var expiry = DateTime.UtcNow.AddSeconds(token.ExpiresInSeconds.Value);
                     tokenList.Add(new TokenInfo(token.AccessToken, "gsc_access_token", jobInfo.SiteId, expiry));
-                    tokenList.Add(new TokenInfo(token.RefreshToken, "gsc_refresh_token", jobInfo.SiteId, expiry));
 
                     await contentRepository.StoreTokens(tokenList); //todo: modify to update
                 }
 
                 var accessToken = tokens.First(o => o.TokenType == "access_token").Token;
                 var gscAccessToken = tokens.First(o => o.TokenType == "gsc_access_token").Token;
-                var gscRefreshToken = tokens.First(o => o.TokenType == "gsc_refresh_token").Token;
 
                 var gscAnalytics = await gscClient.GetAllSearchAnalyticsBySite(siteInfo.Url, tokens);
                 var collections = await webflowClient.GetAllCMSCollections(siteInfo.ExternalSiteId, accessToken);
@@ -61,13 +60,17 @@ namespace SEO.Optimize.Jobs.Handlers
                     foreach (var item in pageInfo.Items)
                     {
                         item.CollectionId = collectionId;
-                        dict.Add(item, await CrawlPage(item, collection, gscAnalytics));
+                        var output = await CrawlPage(item, collection, gscAnalytics);
+                        if(output != null)
+                        {
+                            dict.Add(item, output);
+                        }
                         await contentRepository.UpdateJobAsync(jobInfo.Id);
                     }
                 }
 
                 await contentRepository.AddCrawlData(jobInfo.UserId, jobInfo.SiteId, dict);
-                await contentRepository.UpdateJobAsync(jobInfo.Id, true);
+                await contentRepository.UpdateJobAsync(jobInfo.Id, "Completed");
             }
             catch(Exception ex)
             {
@@ -85,11 +88,29 @@ namespace SEO.Optimize.Jobs.Handlers
                 ("Consequatur", "https://thesample-e155a7.webflow.io/"), 
                 ("temporibus","https://thesample-e155a7.webflow.io/"), 
                 ("nostrum", "https://thesample-e155a7.webflow.io/"), 
-                ("Repudiandae", "https://thesample-e155a7.webflow.io/") 
+                ("Repudiandae", "https://thesample-e155a7.webflow.io/") ,
+                ("Quisque", "https://secondsample.webflow.io/") ,
+                ("Praesent", "https://secondsample.webflow.io/") ,
+                ("vibrant", "https://secondsample.webflow.io/") ,
+                ("heart of the city", "https://secondsample.webflow.io/") ,
+                ("Jasmin Studio Webflow", "https://secondsample.webflow.io/") ,
+                ("Bright", "https://secondsample.webflow.io/") ,
             };
 
-            var output = await pageCrawlModelHandler.CrawlContentAndFindLinks(collectionItem.FieldData.PostBody, keywords);
-            return output;
+            CrawlPageOutput res = new CrawlPageOutput();
+            foreach (var keyValue in collectionItem.FieldData)
+            {
+                if(keyValue.Value is null || keyValue.Value is JObject)
+                {
+                    continue;
+                }
+
+                var output = await pageCrawlModelHandler.CrawlContentAndFindLinks(keyValue.Key, keyValue.Value.ToString(), keywords);
+                res.ExistingLinks.AddRange(output.ExistingLinks);
+                res.LinkOpportunities.AddRange(output.LinkOpportunities);
+            }
+
+            return res;
         }
     }
 }

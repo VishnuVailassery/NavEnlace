@@ -9,35 +9,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            background-color: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .tile-container {
+            width: 70%;
+            max-width: 700px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .graphic-section {
+            flex: 1 1 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f7f9fc;
+            padding: 20px;
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+        }
+
+            .graphic-section img {
+                max-width: 100%;
+                height: auto;
+            }
+
+        .login-section {
+            flex: 1 1 50%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+            .login-section h2 {
+                font-weight: bold;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+        .btn-custom, .btn-primary {
+            background-color: #fff;
+            border: 2px solid #ddd;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-custom img, .btn-primary img {
+                width: 18px;
+                height: 18px;
+                margin-right: 8px;
+            }
+
+        .btn-primary {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+        }
+
+            .btn-primary:hover {
+                background-color: #357ae8;
+            }
+
+        .btn-custom:hover {
+            background-color: #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+            .form-group label {
+                font-weight: bold;
+            }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .text-primary {
+            color: #563d7c !important;
+        }
+
+        .text-right {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <header class="bg-dark text-white d-flex justify-content-between align-items-center py-3">
-        <h1 class="ml-3">SEOPT</h1>
-        <div class="mr-3">
-            @if (User.Identity.IsAuthenticated)
-            {
-                <a class="btn btn-danger" href="~/Home/Logout">Logout</a>
-            }
-            else
-            {
-                <a class="btn btn-primary" href="~/Home/Login">Sign in with Google</a>
-            }
+    <div class="tile-container">
+        <!-- Graphic Representation Section -->
+        <div class="graphic-section">
+            <img src="/path/to/generated-image.png" alt="Graphic Representation" />
         </div>
-    </header>
 
-    <div class="container d-flex flex-column align-items-center justify-content-center" style="height: 80vh;">
-        <div class="text-center">
-            <h2>Welcome</h2>
-            <p>Please sign in to continue:</p>
-            @if (User.Identity.IsAuthenticated)
-            {
-                <p>Welcome back, @User.Identity.Name!</p>
-                <p>
-                    <img src="@User.FindFirst("urn:google:picture")?.Value" alt="Profile Picture" width="100" height="100" />
-                </p>
-            }
-            <a class="btn btn-success btn-lg mt-4" href="~/Home/Dashboard">Get Started</a> <!-- Get Started button -->
-            <p class="mt-2">Click the button above to access your dashboard and start exploring our features.</p> <!-- Typical text paragraph -->
+        <!-- Login Section -->
+        <div class="login-section">
+            <h2 class="text-center">Log in</h2>
+            <button class="btn-custom" onclick="window.location.href='/Home/Login';">
+                <img src="https://cdn.visily.ai/app/production/1733015465526/static/GoogleLogo-842bfc2a.svg" alt="Google">
+                Continue with Google
+            </button>
+            <button class="btn-custom">SSO</button>
+            <button class="btn-custom">GitHub</button>
+
+            <div class="text-center mt-2">
+                <p>or</p>
+            </div>
+
+            <form>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password" />
+                </div>
+                <div class="text-right">
+                    <a href="~/Home/ForgotPassword" class="text-primary">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Log in</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <p>Don’t have an account? <a href="~/Home/SignUp" class="text-primary">Sign up now</a></p>
+            </div>
         </div>
     </div>
 

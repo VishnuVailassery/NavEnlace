@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using SEO.Optimize.Core.Configurations;
 using SEO.Optimize.Core.Interfaces;
 using SEO.Optimize.Core.Models;
 using SEO.Optimize.Postgres.Repository;
@@ -9,22 +11,22 @@ namespace SEO.Optimize.Web.Services
 {
     public class IntegrationService
     {
-        private readonly string redirectUri = "https://eexample123.com";
         private readonly string[] scopes = { "app_subscriptions:read", "assets:read", "assets:write", "authorized_user:read", "cms:read", "cms:write", "components:read", "components:write", "custom_code:read", "custom_code:write", "ecommerce:read", "ecommerce:write", "forms:read", "forms:write", "pages:read", "pages:write", "sites:read", "sites:write", "site_activity:read", "site_config:read", "site_config:write", "users:read", "users:write", "workspace:read", "workspace:write" };
-
 
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly IContentRepository contentRepository;
+        private readonly WebflowConfigs webflowConfigs;
 
-        public IntegrationService(IContentRepository contentRepository)
+        public IntegrationService(IContentRepository contentRepository, IOptions<WebflowConfigs> webflowConfigs)
         {
             this.contentRepository = contentRepository;
+            this.webflowConfigs = webflowConfigs.Value;
         }
 
         public string AuthorizeWithWebflow()
         {
             var authorizationUrl = GetAuthorizationCodeRequestUrl()
-                    .ToString();
+                                   .ToString();
 
             return authorizationUrl;
         }
@@ -41,10 +43,10 @@ namespace SEO.Optimize.Web.Services
             var tokenUrl = "https://api.webflow.com/oauth/access_token";
             var requestBody = new Dictionary<string, string>();
             {
-                requestBody.Add("client_id", clientId);
-                requestBody.Add("client_secret", clientSecret);
+                requestBody.Add("client_id", webflowConfigs.ClientId);
+                requestBody.Add("client_secret", webflowConfigs.ClientSecret);
                 requestBody.Add("code", code);
-                requestBody.Add("redirect_uri", redirectUri);
+                requestBody.Add("redirect_uri", webflowConfigs.RedirectUrls.First());
                 requestBody.Add("grant_type", "authorization_code");
             };
 
@@ -61,7 +63,6 @@ namespace SEO.Optimize.Web.Services
             }
             catch (Exception ex)
             {
-                // Log or handle the exception as needed
                 Console.WriteLine($"Error exchanging code for token: {ex.Message}");
                 throw;
             }
@@ -70,8 +71,8 @@ namespace SEO.Optimize.Web.Services
         private string GetAuthorizationCodeRequestUrl()
         {
             return $"https://webflow.com/oauth/authorize?" +
-                   $"client_id={clientId}&" +
-                   $"redirect_uri={redirectUri}&" +
+                   $"client_id={webflowConfigs.ClientId}&" +
+                   $"redirect_uri={webflowConfigs.RedirectUrls.First()}&" +
                    $"response_type=code&" +
                    $"scope={string.Join(" ", scopes)}&" +
                    $"state={Guid.NewGuid()}";

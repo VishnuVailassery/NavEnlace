@@ -18,7 +18,6 @@ namespace SEO.Optimize.Core.Models.Tokens
 
         public string TokenType { get; set; }
         public string Token {  get; set; }
-        public DateTime ExpiresOn { get; set; }
 
         public int SiteId { get; set; }
         public DateTime? Expiry { get; }

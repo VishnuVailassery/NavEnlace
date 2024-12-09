@@ -2,63 +2,41 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Pages";
 }
 
-<div class="list-pages-container">
-    <!-- Filters Bar with Styled Dropdowns -->
-    <div class="filters-bar">
-        <form id="filter-form" class="filters-form">
-            <div class="dropdown-filter">
-                <select id="filter-category" name="category" class="styled-dropdown">
-                    <option value="">All Categories</option>
-                    @foreach (var category in Model.Sites)
-                    {
-                        <option value="@category">@category</option>
-                    }
-                </select>
-            </div>
-
-            <div class="dropdown-filter">
-                <select id="filter-tags" name="tags" class="styled-dropdown">
-                    <option value="">All Tags</option>
-                    @foreach (var tag in Model.PageTitle)
-                    {
-                        <option value="@tag">@tag</option>
-                    }
-                </select>
-            </div>
-
-            <div class="dropdown-filter">
-                <select id="filter-date" name="date" class="styled-dropdown">
-                    <option value="">All Dates</option>
-                    <option value="Today">Today</option>
-                    <option value="Last 7 Days">Last 7 Days</option>
-                    <option value="Last 30 Days">Last 30 Days</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn styled-button">Apply Filters</button>
-        </form>
+<div class="pages-container">
+    <!-- Header -->
+    <div class="header">
+        <h1>Pages</h1>
+        <div class="actions">
+            <button class="btn export">Export</button>
+            <button class="btn import">Import</button>
+            <button class="btn add-pages">+ Add Pages</button>
+        </div>
     </div>
 
-    <!-- Page Tiles -->
-    <div class="pages-list">
+    <!-- Table Tiles -->
+    <div class="table-tiles">
         @if (Model.Pages.Any())
         {
             @foreach (var pageVal in Model.Pages)
             {
-                <div class="page-tile" onclick="toggleDetails(@pageVal.Id)">
-                    <div class="page-header">
-                        <h4>@pageVal.Title</h4>
-                        <p class="page-summary">@pageVal.Url</p>
-                    </div>
-                    <div id="details-@pageVal.Id" class="page-details">
-                        <div class="details-content">
-                            <p>Internal Links : @pageVal.Stats?.InternalLinkCount</p>
-                            <p>External Links : @pageVal.Stats?.InternalLinkCount</p>
-                            <p>Opportunities : @pageVal.Stats?.LinkOpportunityCount</p>
-                            <a href="@pageVal.Url" class="btn styled-link">View Full Page</a>
+                <div class="tile-row">
+                    <div class="tile-content">
+                        <div class="thumbnail">
+                            <img src="https://cdn.prod.website-files.com/671935d5b73c4687f0209281/671935d5b73c4687f020928e_placeholder%201.svg" alt="Thumbnail" />
+                        </div>
+                        <div class="details">
+                            <h4 class="page-name">@pageVal.Title</h4>
+                            <p class="page-url">@pageVal.Url</p>
+                            <p class="last-edit">Last Crawled: @DateTime.UtcNow.ToString("MMM dd, yyyy")</p>
+                            <p class="status">
+                                <span class="status-badge @pageVal.Title.ToLower()">@pageVal.Title</span>
+                            </p>
+                        </div>
+                        <div class="actions">
+                            <button class="btn opportunities" onclick="viewOpportunities(@pageVal.Id)">View Opportunities</button>
 @using SEO.Optimize.Core.Models.ProjectInfo
                         </div>
                     </div>
@@ -67,17 +45,140 @@
         }
         else
         {
-            <p>No pages match the selected filters.</p>
+            <p>No pages available.</p>
         }
     </div>
 </div>
 
+@section Styles {
+    <style>
+        .pages-container {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .actions .btn {
+            margin-left: 10px;
+            padding: 10px 15px;
+            border: none;
+            background-color: #5A67D8;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .table-tiles {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tile-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .tile-row:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tile-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .thumbnail img {
+            width: 60px;
+            height: auto;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+
+        .details {
+            flex: 1;
+        }
+
+        .page-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .page-url {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .last-edit {
+            font-size: 12px;
+            color: #adb5bd;
+        }
+
+        .status {
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            text-transform: capitalize;
+        }
+
+        .status-badge.displayed {
+            background-color: #E6F7E6;
+            color: #2E7D32;
+        }
+
+        .status-badge.draft {
+            background-color: #FFF5E6;
+            color: #F57C00;
+        }
+
+        .status-badge.hidden {
+            background-color: #FDEDEC;
+            color: #C62828;
+        }
+
+        .actions .btn.opportunities {
+            padding: 8px 12px;
+            background-color: #3182CE;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .actions .btn.opportunities:hover {
+            background-color: #225a9c;
+        }
+    </style>
+}
+
 @section Scripts {
     <script>
-        function toggleDetails(pageId) {
-            const details = document.getElementById('details-' + pageId);
-            details.classList.toggle('collapse');
+        function viewOpportunities(pageId) {
+            alert('Viewing opportunities for page ID: ' + pageId);
+            // Add logic to navigate or fetch opportunities for the page
         }
     </script>
 }
-

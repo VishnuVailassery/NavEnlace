@@ -13,3 +13,5 @@
 /src/SEO.Optimize.Jobs/bin/Debug/net8.0
 /src/SEO.Optimize.Jobs/obj
 /src/SEO.Optimize.Postgres/obj
+/.vs/ProjectEvaluation
+/src/SEO.Optimize.Web/wwwroot/lib

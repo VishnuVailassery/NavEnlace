@@ -41,7 +41,12 @@ namespace SEO.Optimize.Web.Controllers
             EnsureArg.IsNotNull(identity, nameof(identity));
 
             var sessionKey = identity.FindFirst("seopt_session")?.Value;
-            await appStateCache.SetAsync(sessionKey, new Dictionary<string, string>());
+            await appStateCache.SetAsync(
+                sessionKey, 
+                new Dictionary<string, string>()
+                {
+                    {"session_expiry",DateTime.UtcNow.AddMinutes(2).ToString("yyyy-MM-dd HH:mm:ss") }
+                });
 
             var userId = await authenticationHandlerService.EnsureUserExistsAsync(identity);
             return RedirectToAction("Dashboard");
